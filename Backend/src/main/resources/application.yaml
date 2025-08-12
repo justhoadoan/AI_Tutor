@@ -1,0 +1,57 @@
+
+server:
+  port: 8888
+  error:
+
+    include-message: always
+
+
+spring:
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/learning
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+    show-sql: true
+    properties:
+      hibernate:
+
+        format_sql: true
+
+
+  ai:
+    vertex:
+      ai:
+        project-id: 459615283075
+        location: us-central1
+        api-key: ${GEMINI_API_KEY} # L?y t? file .env ho?c bi?n môi tr??ng
+
+        gemini:
+          chat:
+            options:
+              model: gemini-1.5-flash
+              temperature: 0.5
+          embedding:
+            options:
+              model: text-embedding-004
+
+    vectorstore:
+      chroma:
+        client:
+          host: http://localhost # Host c?a container ChromaDB
+          port: 8000           # C?ng c?a container ChromaDB
+        # Tên c?a collection (gi?ng nh? m?t 'b?ng') trong Chroma ?? l?u tr? vector
+        collection:
+          name: "ai_tutor_collection"
+
+application:
+  storage:
+    local-path: "./ai_tutor_documents"
+
