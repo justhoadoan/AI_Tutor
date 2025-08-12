@@ -23,10 +23,14 @@ public class Document {
     @Column(nullable = false)
     private ProcessingStatus status;
 
+    private String subjectName;
+    private String semesterCode;
+
     @CreationTimestamp
     private LocalDateTime uploadDate;
 
     @ManyToOne(fetch = FetchType.LAZY) //a subject can have many documents
     @JoinColumn(name = "subject_id",nullable = false)
     private Subject subject;
+
 }

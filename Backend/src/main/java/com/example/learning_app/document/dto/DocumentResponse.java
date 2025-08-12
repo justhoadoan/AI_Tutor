@@ -6,7 +6,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-public class DocumentUploadResponse {
+public class DocumentResponse {
     private Long id;
     private String fileName;
     private ProcessingStatus status;

@@ -17,4 +17,8 @@ public class Subject {
 
     @Column(nullable = false)
     private String subjectName;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "semesterId", nullable = false)
+    private Semester semester;
 }
