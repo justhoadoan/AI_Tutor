@@ -30,8 +30,9 @@
 ## 🚀 Quick Start Guide
 
 To get the project up and running, please ensure you have the required tools installed and follow the steps below.
-
 ### **Prerequisites**
+
+To build and run this project, you need to have the following tools installed on your local machine:
 
 | Tool         | Version / Note                                |
 | :-------------- | :-------------------------------------------- |
@@ -40,6 +41,15 @@ To get the project up and running, please ensure you have the required tools ins
 | **Maven**       | Version 3.8 or later.                         |
 | **Node.js**     | Version 18 or later (which includes npm).     |
 | **Docker**      | The latest version of Docker Desktop.         |
+
+### **Background Services**
+
+This project relies on the following services, which are automatically managed by `docker-compose`. You do not need to install them separately.
+
+| Service      | Description                               |
+| :----------- | :---------------------------------------- |
+| **PostgreSQL** | Relational database for storing metadata. |
+| **ChromaDB**   | Vector database for semantic search (RAG).|
 
 ### **Step 1: Clone the Repository**
 
