@@ -88,7 +88,7 @@ Open a **new terminal**, navigate to the `backend` directory, and use Maven to r
 cd backend
 mvn spring-boot:run
 ```
-Wait until you see the "Started LearningAppApplication" message in the logs. The backend will be running at `http://localhost:8080`.
+Wait until you see the "Started LearningAppApplication" message in the logs. The backend will be running at `http://localhost:8888`.
 
 ### **Step 5: Run the Frontend (Tauri)**
 
