@@ -31,6 +31,7 @@ public class DocumentService {
     private final SemesterRepository semesterRepository;
     private final SubjectRepository subjectRepository;
     private final DocumentMapper documentMapper;
+    private final StorageService storageService;
 
     @Value("${application.storage.local-path}")
     private String storagePath;
@@ -55,9 +56,51 @@ public class DocumentService {
         Subject subject = findOrCreateSubject(request.getSubjectCode(), request.getSubjectName());
         Semester semester = findOrCreateSemester(year.longValue(), term.longValue());
 
+        String filePath = storageService.save(multipartFile,semesterCode, subject.getCourseName());
+        log.info("Physical file saved at: {}", filePath);
 
+        Document document = new Document();
+        document.setFileName(multipartFile.getOriginalFilename());
+        document.setFilePath(filePath);
+        document.setSubject(subject);
+        document.setSemester(semester);
+        Document savedDocument = documentRepository.save(document);
 
-   }
+        log.info("Document metadata saved with ID: {}", savedDocument.getId());
+
+    }
+
+    @Transactional
+    public DocumentResponse  updateDocumentMetadata(Long documentId, DocumentUploadRequest request) throws IOException {
+        Document document = documentRepository.findById(documentId).
+        orElseThrow(()->new RuntimeException("Document not found"));
+
+        String oldFilePath = document.getFilePath();
+
+        Integer newYear = Integer.parseInt(request.getSemesterCode().substring(0, 4));
+        Integer newTerm = Integer.parseInt(request.getSemesterCode().substring(4));
+        Subject newSubject = findOrCreateSubject(request.getSemesterCode(), request.getSubjectName());
+        Semester newSemester = findOrCreateSemester(newYear.longValue(), newTerm.longValue());
+
+        String newFilePath = storageService.move(oldFilePath, newSubject.getCourseName(), newSubject.getCourseName());
+
+        document.setFilePath(newFilePath);
+        document.setSubject(newSubject);
+        document.setSemester(newSemester);
+        Document updatedDocument = documentRepository.save(document);
+
+        return documentMapper.toDocumentResponse(updatedDocument);
+    }
+
+    @Transactional
+    public void deleteDocument(Long id) throws IOException{
+        Optional<Document> document = documentRepository.findById(id);
+        if (document.isPresent()) {
+            documentRepository.deleteById(id);
+            storageService.delete(document.get().getFilePath());
+        }
+    }
+
     private Subject findOrCreateSubject(String code, String subjectName) {
 
         if(code == null || code.isBlank() || subjectName == null || subjectName.isBlank())

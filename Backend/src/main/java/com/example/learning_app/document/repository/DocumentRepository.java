@@ -10,5 +10,4 @@ import java.util.Optional;
 
 @Repository
 public interface DocumentRepository extends JpaRepository<Document, Long> {
-    Subject findByYearAndTerm(int year, String term);
 }
