@@ -1,0 +1,58 @@
+@startuml
+' Sơ đồ gói cho AI-Tutor Backend (Phiên bản Local-First)
+
+' -- Cài đặt giao diện --
+skinparam package {
+    borderColor gray
+    backgroundColor #EEE
+    arrowColor black
+}
+skinparam ArrowColor #555555
+skinparam stereotype {
+    FontColor #555555
+    FontSize 10
+}
+hide empty members
+
+' -- Định nghĩa các gói --
+package "shared" <<Core>> {
+}
+
+package "config" <<Configuration>> {
+}
+
+package "settings" <<Feature>> {
+}
+
+package "document" <<Feature>> {
+    interface DocumentIngestionTrigger
+}
+
+package "chat" <<Feature>> {
+}
+
+package "ai" <<Feature>> {
+}
+
+' -- Định nghĩa các mối quan hệ phụ thuộc --
+' Mũi tên A ..> B có nghĩa là A phụ thuộc vào B
+
+' Gói AI là trung tâm
+ai ..> document : "<<implements>>" ' AI Service implements the Trigger from Document package
+ai ..> chat
+ai ..> settings
+ai ..> shared
+
+' Gói Document
+document ..> shared
+
+' Gói Chat
+chat ..> document : "<<uses model>>" ' ChatSession needs Document/Subject entities
+chat ..> shared
+
+' Gói Settings & Config
+settings ..> shared
+config ..> settings
+config ..> shared
+
+@enduml

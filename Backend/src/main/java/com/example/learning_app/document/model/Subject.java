@@ -9,16 +9,15 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = "courseName"))
+@Table(name = "subject")
 public class Subject {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "subject_code")
 
-    @Column(nullable = false)
-    private String subjectName;
+    private String subjectCode;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "semesterId", nullable = false)
-    private Semester semester;
+    @Column(name = "course_name")
+    private String courseName;
+
+
 }

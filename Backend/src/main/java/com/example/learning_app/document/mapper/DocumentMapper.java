@@ -9,6 +9,7 @@ import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface DocumentMapper {
+
     @Mapping(source = "subject.subjectName", target = "subjectName")
     @Mapping(source = "semester", target = "semesterCode")
     DocumentResponse toDocumentResponse(Document document);

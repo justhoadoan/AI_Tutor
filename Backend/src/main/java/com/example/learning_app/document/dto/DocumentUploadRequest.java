@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class DocumentUploadRequest {
+    private String subjectCode;
     private String subjectName;
-    private Integer year;
+    private String semesterCode;
 }
