@@ -32,11 +32,13 @@ public class DocumentService {
     private final SubjectRepository subjectRepository;
     private final DocumentMapper documentMapper;
     private final StorageService storageService;
+    private final DocumentIngestTrigger ingestTrigger;
 
     @Value("${application.storage.local-path}")
     private String storagePath;
 
     public List<DocumentResponse> getAllDocuments() {
+
         List<Document> documents = documentRepository.findAll();
         return documentMapper.toDocumentResponseList(documents);
     }
@@ -66,12 +68,14 @@ public class DocumentService {
         document.setSemester(semester);
         Document savedDocument = documentRepository.save(document);
 
+        ingestTrigger.triggerIngestion(savedDocument);
         log.info("Document metadata saved with ID: {}", savedDocument.getId());
 
     }
 
     @Transactional
     public DocumentResponse  updateDocumentMetadata(Long documentId, DocumentUploadRequest request) throws IOException {
+
         Document document = documentRepository.findById(documentId).
         orElseThrow(()->new RuntimeException("Document not found"));
 
@@ -94,6 +98,7 @@ public class DocumentService {
 
     @Transactional
     public void deleteDocument(Long id) throws IOException{
+
         Optional<Document> document = documentRepository.findById(id);
         if (document.isPresent()) {
             documentRepository.deleteById(id);
@@ -132,9 +137,4 @@ public class DocumentService {
                     return semesterRepository.save(newSemester);
                 });
     }
-
-
-
-
-
 }
