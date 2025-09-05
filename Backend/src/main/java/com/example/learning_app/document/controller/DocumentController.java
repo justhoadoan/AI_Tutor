@@ -41,6 +41,7 @@ public class DocumentController {
 
         try {
             DocumentUploadRequest request = objectMapper.readValue(requestJson, DocumentUploadRequest.class);
+            documentService.addDocument(file, request);
             return ResponseEntity.accepted().body("Document received and is being processed.");
 
         } catch (JsonProcessingException e) {
