@@ -17,20 +17,17 @@ spring:
 
         format_sql: true
   ai:
-    vertex:
-      ai:
-        project-id: gen-lang-client-0486578479
-        location: asia-southeast1
-        api-key: ${GEMINI_API_KEY}
+    ollama:
 
-        gemini:
-          chat:
-            options:
-              model: gemini-1.5-flash
-              temperature: 0.5
-          embedding:
-            options:
-              model: text-embedding-004
+      base-url: http://localhost:11434
+
+      chat:
+        model: "deepseek-r1:1.5b"
+        options:
+          temperature: 0.7 # Độ "sáng tạo" của câu trả lời
+      embedding:
+
+        model: "nomic-embed-text"
 
     vectorstore:
       chroma:
@@ -39,6 +36,7 @@ spring:
           port: 8000
         collection:
           name: "ai_tutor_collection"
+        initializeSchema: true
 
 application:
   storage:
