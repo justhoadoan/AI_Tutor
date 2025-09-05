@@ -3,6 +3,8 @@ package com.example.learning_app.document.controller;
 import com.example.learning_app.document.dto.DocumentResponse;
 import com.example.learning_app.document.dto.DocumentUploadRequest;
 import com.example.learning_app.document.service.DocumentService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -20,6 +22,7 @@ import java.util.List;
 @Slf4j
 public class DocumentController {
     private final DocumentService documentService;
+    private final ObjectMapper objectMapper;
 
     @GetMapping
     public ResponseEntity<List<DocumentResponse>> getAllDocument(){
@@ -27,18 +30,22 @@ public class DocumentController {
         return ResponseEntity.ok(documents);
     }
 
-    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<String> uploadDocument(@RequestParam("file") MultipartFile file,
-                                                 @RequestPart("request") DocumentUploadRequest request){
-        if(file.isEmpty()){
-            return ResponseEntity.badRequest().body("File is empty");
+    @PostMapping(value = "/upload", consumes = "multipart/form-data")
+    public ResponseEntity<String> uploadDocument(
+            @RequestPart("file") MultipartFile file,
+            @RequestPart("request") String requestJson
+    ) {
+        if (file.isEmpty()) {
+            return ResponseEntity.badRequest().body("File cannot be empty.");
         }
-        try
-        {
-            documentService.addDocument(file,request);
+
+        try {
+            DocumentUploadRequest request = objectMapper.readValue(requestJson, DocumentUploadRequest.class);
             return ResponseEntity.accepted().body("Document received and is being processed.");
-        } catch (IOException e) {
-            log.error("Failed to process uploaded file.", e);
+
+        } catch (JsonProcessingException e) {
+            return ResponseEntity.badRequest().body("Invalid JSON format for 'request' part.");
+        } catch (Exception e) {
             throw new RuntimeException("Could not process the uploaded file: " + e.getMessage(), e);
         }
     }
