@@ -14,17 +14,14 @@ spring:
     show-sql: true
     properties:
       hibernate:
-
         format_sql: true
   ai:
     ollama:
-
       base-url: http://localhost:11434
-
       chat:
         model: "deepseek-r1:1.5b"
         options:
-          temperature: 0.7 # Độ "sáng tạo" của câu trả lời
+          temperature: 0.7
       embedding:
 
         model: "nomic-embed-text"
@@ -34,9 +31,8 @@ spring:
         client:
           host: http://localhost
           port: 8000
-        collection:
-          name: "ai_tutor_collection"
-        initializeSchema: true
+        collection-name: "ai_tutor_collection"
+        initialize-schema: true
 
 application:
   storage:
