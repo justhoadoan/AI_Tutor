@@ -3,6 +3,11 @@ server:
   error:
     include-message: always
 spring:
+  servlet:
+    multipart:
+      enabled: on
+      max-file-size: -1
+      max-request-size: -1
   datasource:
     url: jdbc:postgresql://localhost:5432/learning
     username: ${POSTGRES_USER}

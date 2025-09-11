@@ -19,7 +19,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class AiController {
     private final RagService ragService;
 
-    @PostMapping("/chat")
+    @PostMapping("chat/")
+    public ResponseEntity<ChatResponse> chat(@RequestBody ChatRequest chatRequest) {
+        String aiMessage = ragService.getChatResponseWithDocumentId(chatRequest);
+        return ResponseEntity.ok(new ChatResponse(aiMessage));
+    }
+    @PostMapping("/chat/all")
     public ResponseEntity<ChatResponse> chatWithDocument(@RequestBody ChatRequest request) {
         log.info("POST /api/ai/chat - Received RAG chat request. Context: docId={}, subjectId={}",
                 request.getDocumentId(), request.getSubjectId());

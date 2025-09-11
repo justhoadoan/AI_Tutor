@@ -34,25 +34,21 @@ public class DocumentIngestionService implements DocumentIngestTrigger {
                 documentEntity.getId(), documentEntity.getFileName());
 
         try {
-
             log.info("[INGESTION - Step 1/6] Reading file from path: {}", documentEntity.getFilePath());
             FileSystemResource fileResource = new FileSystemResource(documentEntity.getFilePath());
             if (!fileResource.exists()) {
                 throw new IOException("File not found at path: " + documentEntity.getFilePath());
             }
 
-
             log.info("[INGESTION - Step 2/6] Extracting text with Tika...");
             TikaDocumentReader documentReader = new TikaDocumentReader(fileResource);
             List<org.springframework.ai.document.Document> rawDocs = documentReader.get();
             log.info("[INGESTION - Step 2 OK] Extracted {} parts/pages.", rawDocs.size());
 
-
             log.info("[INGESTION - Step 3/6] Splitting text into chunks...");
             TextSplitter textSplitter = new TokenTextSplitter();
             List<org.springframework.ai.document.Document> chunks = textSplitter.apply(rawDocs);
             log.info("[INGESTION - Step 3 OK] Split into {} chunks.", chunks.size());
-
 
             log.info("[INGESTION - Step 4/6] Enriching chunks with metadata...");
             chunks.forEach(chunk -> {
@@ -67,22 +63,39 @@ public class DocumentIngestionService implements DocumentIngestTrigger {
             log.info("[INGESTION - Step 4 OK] Metadata enriched for all chunks.");
 
             log.info("[INGESTION - Step 5/6] Adding chunks to VectorStore (calling AI model)...");
-
             vectorStore.add(chunks);
-            List<org.springframework.ai.document.Document> results = this.vectorStore.similaritySearch(String.valueOf(SearchRequest.builder().query("phân tích tại sao SLMs là tương lai của Agentic AI").topK(4).build()));
-           // log.info("TEST:{}", results);
-            log.info("[INGESTION - Step 5 OK] Chunks successfully added to VectorStore.");
-            log.info("[INGESTION - Step 6/6] Updating document s tatus to READY.");
 
+            // Test search - SỬA LẠI PHẦN NÀY
+            log.info("[INGESTION - Step 5.1] Testing similarity search...");
+            SearchRequest testSearchRequest = SearchRequest.builder()
+                    .query("quiz and SLMs")
+                    .topK(4)
+                    .build();
+
+            List<org.springframework.ai.document.Document> testResults = vectorStore.similaritySearch(testSearchRequest);
+            log.info("[INGESTION - Step 5.1] Test search returned {} results", testResults.size());
+
+            // Test với filter
+            if (documentEntity.getId() != null) {
+                String testFilter = "documentId == '" + documentEntity.getId() + "'";
+                SearchRequest filteredSearchRequest = SearchRequest.builder()
+                        .query("quiz and SLMs")
+                        .topK(4)
+                        .filterExpression(testFilter)
+                        .build();
+
+                List<org.springframework.ai.document.Document> filteredResults = vectorStore.similaritySearch(filteredSearchRequest);
+                log.info("[INGESTION - Step 5.2] Filtered search returned {} results with filter: {}",
+                        filteredResults.size(), testFilter);
+            }
+
+            log.info("[INGESTION - Step 5 OK] Chunks successfully added to VectorStore.");
             log.info("[INGESTION SUCCESS] Successfully processed document ID: {}", documentEntity.getId());
 
         } catch (Exception e) {
-
             log.error("[INGESTION FAILED] CRITICAL ERROR during ingestion for document ID: {}. Reason: {}",
                     documentEntity.getId(), e.getMessage(), e);
-
-            log.warn("[INGESTION] Document ID {} status has been set to ERROR.", documentEntity.getId());
-
         }
     }
+
 }
